@@ -1,0 +1,51 @@
+{
+  "numeric_features": [
+    "age",
+    "experience",
+    "yearsAtCompany",
+    "monthlyIncome",
+    "jobSatisfaction",
+    "workLifeBalance",
+    "performanceRating",
+    "trainingHours",
+    "overtime"
+  ],
+  "feature_importances": {
+    "age": 0.0763195276966093,
+    "experience": 0.0677602724143263,
+    "yearsAtCompany": 0.08295221623038168,
+    "monthlyIncome": 0.12139344417767944,
+    "jobSatisfaction": 0.2116177171780344,
+    "workLifeBalance": 0.13257220869745445,
+    "performanceRating": 0.04462154233688665,
+    "trainingHours": 0.12591633831992358,
+    "overtime": 0.13684673294870428
+  },
+  "feature_means": {
+    "age": 40.80566666666667,
+    "experience": 18.819666666666667,
+    "yearsAtCompany": 7.03,
+    "monthlyIncome": 10519.046666666667,
+    "jobSatisfaction": 2.5036666666666667,
+    "workLifeBalance": 2.498666666666667,
+    "performanceRating": 3.3876666666666666,
+    "trainingHours": 32.086666666666666,
+    "overtime": 0.32466666666666666
+  },
+  "thresholds": {
+    "low": [
+      0.0,
+      0.39
+    ],
+    "medium": [
+      0.4,
+      0.69
+    ],
+    "high": [
+      0.7,
+      1.0
+    ]
+  },
+  "accuracy": 0.835,
+  "roc_auc": 0.7666115193720903
+}

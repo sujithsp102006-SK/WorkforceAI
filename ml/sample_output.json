@@ -1,0 +1,24 @@
+{
+  "status": "success",
+  "risk": "HIGH",
+  "probability": 0.84,
+  "factors": [
+    "Frequent overtime schedule detected (strong indicator of burnout risk)",
+    "Severely low job satisfaction rating (1/4)",
+    "Critical work-life balance strain reported (1/4)",
+    "Compensation tier ($4,200/mo) is below industry baseline for 4 yrs experience",
+    "Limited professional upskilling/training hours recorded (8 hrs/year)"
+  ],
+  "modelUsed": "Scikit-Learn RandomForestClassifier",
+  "inputEcho": {
+    "age": 29,
+    "experience": 4,
+    "yearsAtCompany": 3,
+    "monthlyIncome": 4200,
+    "jobSatisfaction": 1,
+    "workLifeBalance": 1,
+    "performanceRating": 3,
+    "trainingHours": 8,
+    "overtime": true
+  }
+}
