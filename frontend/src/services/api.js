@@ -1,12 +1,14 @@
-const BASE_URL = '/api';
+const API_ORIGIN = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
+
+const BASE_URL = API_ORIGIN
+  ? `${API_ORIGIN}/api`
+  : '/api';
 
 function getAuthHeaders() {
   const token = localStorage.getItem('workforce_token');
 
   return token
-    ? {
-        Authorization: `Bearer ${token}`
-      }
+    ? { Authorization: `Bearer ${token}` }
     : {};
 }
 
@@ -14,7 +16,6 @@ async function handleResponse(response) {
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
 
-    // Token expired / invalid
     if (response.status === 401) {
       localStorage.removeItem('workforce_token');
       localStorage.removeItem('workforce_user');
@@ -29,120 +30,66 @@ async function handleResponse(response) {
 }
 
 export const api = {
-  // =========================
-  // AUTHENTICATION
-  // =========================
-
   async login(email, password) {
     const res = await fetch(`${BASE_URL}/auth/login`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email,
-        password
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
     });
-
     return handleResponse(res);
   },
 
   async getMe() {
     const res = await fetch(`${BASE_URL}/auth/me`, {
-      headers: {
-        ...getAuthHeaders()
-      }
+      headers: getAuthHeaders()
     });
-
     return handleResponse(res);
   },
 
-
-async getMyEmployee() {
-  const res = await fetch(`${BASE_URL}/employees/me`, {
-    method: 'GET',
-    headers: {
-      ...getAuthHeaders()
-    }
-  });
-
-  return handleResponse(res);
-},
-
-
-  // =========================
-  // HEALTH
-  // =========================
+  async getMyEmployee() {
+    const res = await fetch(`${BASE_URL}/employees/me`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(res);
+  },
 
   async getHealth() {
     const res = await fetch(`${BASE_URL}/health`);
     return handleResponse(res);
   },
 
-  // =========================
-  // DASHBOARD STATS
-  // =========================
-
   async getDashboardStats() {
     const res = await fetch(`${BASE_URL}/dashboard/stats`, {
-      headers: {
-        ...getAuthHeaders()
-      }
+      headers: getAuthHeaders()
     });
-
     return handleResponse(res);
   },
-
-  // =========================
-  // EMPLOYEES CRUD
-  // =========================
 
   async getEmployees(params = {}) {
     const query = new URLSearchParams();
 
-    if (params.q) {
-      query.append('q', params.q);
-    }
-
-    if (params.department && params.department !== 'All') {
+    if (params.q) query.append('q', params.q);
+    if (params.department && params.department !== 'All')
       query.append('department', params.department);
-    }
-
-    if (params.riskLevel && params.riskLevel !== 'All') {
+    if (params.riskLevel && params.riskLevel !== 'All')
       query.append('riskLevel', params.riskLevel);
-    }
-
-    if (params.jobRole && params.jobRole !== 'All') {
+    if (params.jobRole && params.jobRole !== 'All')
       query.append('jobRole', params.jobRole);
-    }
 
     const queryString = query.toString()
       ? `?${query.toString()}`
       : '';
 
-    const res = await fetch(
-      `${BASE_URL}/employees${queryString}`,
-      {
-        headers: {
-          ...getAuthHeaders()
-        }
-      }
-    );
-
+    const res = await fetch(`${BASE_URL}/employees${queryString}`, {
+      headers: getAuthHeaders()
+    });
     return handleResponse(res);
   },
 
   async getEmployeeById(id) {
-    const res = await fetch(
-      `${BASE_URL}/employees/${id}`,
-      {
-        headers: {
-          ...getAuthHeaders()
-        }
-      }
-    );
-
+    const res = await fetch(`${BASE_URL}/employees/${id}`, {
+      headers: getAuthHeaders()
+    });
     return handleResponse(res);
   },
 
@@ -155,7 +102,6 @@ async getMyEmployee() {
       },
       body: JSON.stringify(data)
     });
-
     return handleResponse(res);
   },
 
@@ -168,27 +114,16 @@ async getMyEmployee() {
       },
       body: JSON.stringify(data)
     });
-
     return handleResponse(res);
   },
 
   async deleteEmployee(id) {
-    const res = await fetch(
-      `${BASE_URL}/employees/${id}`,
-      {
-        method: 'DELETE',
-        headers: {
-          ...getAuthHeaders()
-        }
-      }
-    );
-
+    const res = await fetch(`${BASE_URL}/employees/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
     return handleResponse(res);
   },
-
-  // =========================
-  // ATTRITION ML PREDICTION
-  // =========================
 
   async predictAttrition(payload) {
     const res = await fetch(`${BASE_URL}/predict`, {
@@ -199,24 +134,13 @@ async getMyEmployee() {
       },
       body: JSON.stringify(payload)
     });
-
     return handleResponse(res);
   },
 
-  // =========================
-  // SKILLS
-  // =========================
-
   async getSkillsForEmployee(employeeId) {
-    const res = await fetch(
-      `${BASE_URL}/skills/${employeeId}`,
-      {
-        headers: {
-          ...getAuthHeaders()
-        }
-      }
-    );
-
+    const res = await fetch(`${BASE_URL}/skills/${employeeId}`, {
+      headers: getAuthHeaders()
+    });
     return handleResponse(res);
   },
 
@@ -229,57 +153,37 @@ async getMyEmployee() {
       },
       body: JSON.stringify(payload)
     });
-
     return handleResponse(res);
   },
 
   async getRolesCatalog() {
     const res = await fetch(`${BASE_URL}/skills/roles/catalog`, {
-      headers: {
-        ...getAuthHeaders()
-      }
+      headers: getAuthHeaders()
     });
-
     return handleResponse(res);
   },
 
-  // =========================
-  // SERPAPI RECOMMENDATIONS
-  // =========================
-
-  async getRecommendationsForEmployee(
-    employeeId,
-    targetRole = ''
-  ) {
+  async getRecommendationsForEmployee(employeeId, targetRole = '') {
     const query = targetRole
       ? `?targetRole=${encodeURIComponent(targetRole)}`
       : '';
 
     const res = await fetch(
       `${BASE_URL}/recommendations/${employeeId}${query}`,
-      {
-        headers: {
-          ...getAuthHeaders()
-        }
-      }
+      { headers: getAuthHeaders() }
     );
-
     return handleResponse(res);
   },
 
   async searchLiveResources(payload) {
-    const res = await fetch(
-      `${BASE_URL}/recommendations/search`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...getAuthHeaders()
-        },
-        body: JSON.stringify(payload)
-      }
-    );
-
+    const res = await fetch(`${BASE_URL}/recommendations/search`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders()
+      },
+      body: JSON.stringify(payload)
+    });
     return handleResponse(res);
   }
 };
